@@ -4,6 +4,10 @@
 
 Monitor HTTP de disponibilidad **standalone** con guardia anti-SSRF por resolución DNS (incluyendo saltos de redirección), paridad SQL con `PERCENTILE_CONT`, inspector de expiración de certificados SSL/TLS, badges SVG dinámicos, máquina de estados de incidentes de 2 fallos consecutivos con webhooks HMAC-SHA256, `/demo` interactiva y páginas públicas `/status/public`.
 
+## Qué hace este proyecto
+
+**PingPulse** vigila si tus sitios web o APIs están en línea y qué tan rápido responden. Mide latencias P50/P95/P99, revisa cuántos días le quedan al certificado SSL/TLS antes de vencer, abre incidentes automáticamente cuando detecta dos caídas seguidas (enviando alertas firmadas por webhook), genera un badge SVG embebible y publica una página de estado (`/status/public`).
+
 ---
 
 ## 1. Arquitectura
