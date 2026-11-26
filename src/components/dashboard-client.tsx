@@ -11,6 +11,7 @@ import type {
   WebhookDispatchPreview,
 } from "@/contracts/pingpulse";
 import type { TlsCertInfo } from "@/core/tls-inspector";
+import { useLocale } from "@/lib/i18n";
 import { useDashboardStore } from "@/store/dashboard-store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -30,6 +31,7 @@ import {
 import Link from "next/link";
 import * as React from "react";
 import { CreateMonitorModal } from "./create-monitor-modal";
+import { LanguageToggle } from "./language-toggle";
 import { LatencyChart } from "./latency-chart";
 import { ProbeUrlPanel } from "./probe-url-panel";
 import { ThemeToggle } from "./theme-toggle";
@@ -52,6 +54,7 @@ export function DashboardClient({
   initialMonitors,
   initialTelemetry,
 }: DashboardClientProps) {
+  const { locale, t } = useLocale();
   const queryClient = useQueryClient();
   const { pushToast } = useUiToast();
   const {
@@ -214,7 +217,7 @@ export function DashboardClient({
                 </span>
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                Uptime, Percentiles P50/P95/P99 & Guard anti-SSRF
+                {t.headerSubtitle}
               </p>
             </div>
           </div>
@@ -226,13 +229,13 @@ export function DashboardClient({
               className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
             >
               <ExternalLink className="h-3.5 w-3.5 text-emerald-400" />
-              Status Page Pública
+              {t.publicStatusPage}
             </Link>
             <Link
               href="/demo"
               className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
             >
-              Demo
+              {t.demo}
             </Link>
             <a
               href="/api/docs"
@@ -240,12 +243,13 @@ export function DashboardClient({
               rel="noreferrer"
               className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
             >
-              API Docs
+              {t.apiDocs}
             </a>
+            <LanguageToggle />
             <ThemeToggle />
             <UiButton size="sm" onClick={() => setCreateModalOpen(true)}>
               <Plus className="h-3.5 w-3.5" />
-              Nuevo Monitor
+              {t.newMonitor}
             </UiButton>
           </div>
         </div>
@@ -255,7 +259,7 @@ export function DashboardClient({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-[#111114]">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Monitores Activos
+              {t.activeMonitors}
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums">
               {monitors.length}
@@ -263,7 +267,7 @@ export function DashboardClient({
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-[#111114]">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Uptime Promedio (24h)
+              {t.avgUptime24h}
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-emerald-500">
               {avgUptime}%
@@ -271,7 +275,7 @@ export function DashboardClient({
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-[#111114]">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Latencia P95 Global
+              {t.globalP95Latency}
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-indigo-400">
               {avgP95} ms
@@ -279,7 +283,7 @@ export function DashboardClient({
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-[#111114]">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Incidentes Abiertos
+              {t.openIncidents}
             </p>
             <p
               className={`mt-1 text-2xl font-bold tabular-nums ${
@@ -323,9 +327,9 @@ export function DashboardClient({
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <aside className="space-y-3 lg:col-span-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold">Servicios Monitoreados</h2>
+              <h2 className="text-sm font-semibold">{t.monitoredServices}</h2>
               <span className="text-[11px] text-zinc-500">
-                Worker máx. 5 concurrentes
+                {t.workerConcurrency}
               </span>
             </div>
 
@@ -365,7 +369,7 @@ export function DashboardClient({
                     <div className="mt-2 flex items-center gap-1.5 rounded-md bg-rose-500/10 px-2 py-1 text-[11px] text-rose-400">
                       <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                       <span className="truncate">
-                        Incidente activo: {m.openIncident.cause}
+                        {t.activeIncidentPrefix} {m.openIncident.cause}
                       </span>
                     </div>
                   )}
@@ -409,7 +413,7 @@ export function DashboardClient({
                         }
                       >
                         <RefreshCw className="h-3.5 w-3.5" />
-                        Sondear ahora
+                        {t.probeNow}
                       </UiButton>
                       <UiButton
                         size="sm"
@@ -423,12 +427,12 @@ export function DashboardClient({
                         }
                       >
                         <Flame className="h-3.5 w-3.5" />
-                        Simular caída e incidente
+                        {t.simulateOutage}
                       </UiButton>
                       <UiButton
                         size="icon"
                         variant="ghost"
-                        aria-label="Eliminar monitor"
+                        aria-label={t.deleteMonitorAria}
                         onClick={() =>
                           deleteMutation.mutate(selectedMonitor.id)
                         }
@@ -485,16 +489,16 @@ export function DashboardClient({
                     <div className="mb-2 flex items-center justify-between text-xs text-zinc-500">
                       <span className="flex items-center gap-1.5">
                         <Activity className="h-3.5 w-3.5 text-indigo-400" />
-                        Serie temporal de latencia ({timeWindow})
+                        {t.latencySeriesTitle} ({timeWindow})
                       </span>
-                      {telemetryLoading && <span>Actualizando...</span>}
+                      {telemetryLoading && <span>{t.updating}</span>}
                     </div>
                     <LatencyChart series={telemetry.series} />
                   </div>
 
                   <div className="mt-5 border-t border-zinc-200 pt-4 dark:border-zinc-800">
                     <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                      Disponibilidad Diaria (Últimos 30 días)
+                      {t.dailyAvailabilityTitle}
                     </h3>
                     <UptimeBars buckets={telemetry.dailyBuckets} />
                   </div>
@@ -513,7 +517,7 @@ export function DashboardClient({
                         const snippet = `![Uptime](${window.location.origin}/api/badge/${selectedMonitor.id}.svg)`;
                         void navigator.clipboard?.writeText(snippet);
                         pushToast({
-                          title: "Snippet Markdown copiado",
+                          title: t.badgeCopiedTitle,
                           description: snippet,
                           variant: "info",
                         });
@@ -521,19 +525,17 @@ export function DashboardClient({
                       className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-2.5 py-1 font-mono text-[11px] text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                     >
                       <Copy className="h-3 w-3" />
-                      Copiar Badge Markdown
+                      {t.copyBadgeMarkdown}
                     </button>
                   </div>
                 </div>
 
                 <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-[#111114]">
-                  <h3 className="text-sm font-semibold">
-                    Historial de Incidentes
-                  </h3>
+                  <h3 className="text-sm font-semibold">{t.incidentHistory}</h3>
                   {telemetry.incidents.length === 0 ? (
                     <p className="mt-2 flex items-center gap-2 text-xs text-emerald-500">
                       <CheckCircle2 className="h-4 w-4" />
-                      Sin incidentes registrados en este servicio.
+                      {t.noIncidents}
                     </p>
                   ) : (
                     <div className="mt-3 space-y-2">
@@ -550,15 +552,19 @@ export function DashboardClient({
                                   : "bg-emerald-500/20 text-emerald-400"
                               }`}
                             >
-                              {inc.status === "open" ? "Abierto" : "Resuelto"}
+                              {inc.status === "open"
+                                ? t.incidentOpen
+                                : t.incidentResolved}
                             </span>
                             <span className="font-medium">{inc.cause}</span>
                           </div>
                           <span className="font-mono text-[11px] text-zinc-500">
-                            Inicio:{" "}
-                            {new Date(inc.startedAt).toLocaleString("es-ES")}
+                            {t.incidentStart}{" "}
+                            {new Date(inc.startedAt).toLocaleString(
+                              locale === "en" ? "en-US" : "es-ES",
+                            )}
                             {inc.resolvedAt
-                              ? ` · Fin: ${new Date(inc.resolvedAt).toLocaleString("es-ES")}`
+                              ? ` · ${t.incidentEnd} ${new Date(inc.resolvedAt).toLocaleString(locale === "en" ? "en-US" : "es-ES")}`
                               : ""}
                           </span>
                         </div>
@@ -569,7 +575,7 @@ export function DashboardClient({
               </>
             ) : (
               <div className="rounded-xl border border-dashed border-zinc-300 p-10 text-center text-sm text-zinc-500 dark:border-zinc-800">
-                Selecciona o crea un monitor para inspeccionar telemetría.
+                {t.selectOrCreateMonitor}
               </div>
             )}
           </section>

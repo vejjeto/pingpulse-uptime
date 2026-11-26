@@ -3,6 +3,7 @@
 import { UiButton } from "@/components/ui/button";
 import type { TlsCertInfo } from "@/core/tls-inspector";
 import type { ProbeExecutionResult } from "@/core/worker";
+import { useLocale } from "@/lib/i18n";
 import { Lock, ShieldAlert, ShieldCheck, Zap } from "lucide-react";
 import * as React from "react";
 
@@ -13,6 +14,7 @@ interface ProbeUrlResponse {
 }
 
 export function ProbeUrlPanel() {
+  const { t } = useLocale();
   const [url, setUrl] = React.useState("https://example.com");
   const [loading, setLoading] = React.useState(false);
   const [result, setResult] = React.useState<{
@@ -37,27 +39,27 @@ export function ProbeUrlPanel() {
         const ssrfReason = data.probe?.ssrfReason;
         setResult({
           ok: false,
-          message: data.detail ?? data.error ?? "Bloqueado por guard anti-SSRF",
+          message: data.detail ?? data.error ?? t.probeUrlBlocked,
           ...(ssrfReason ? { detail: ssrfReason } : {}),
         });
         return;
       }
       const p = data.probe;
       const detail = p?.resolvedIp
-        ? `IP resuelta: ${p.resolvedIp}`
+        ? `${t.probeUrlResolvedIp} ${p.resolvedIp}`
         : (p?.errorMessage ?? undefined);
       setResult({
         ok: p?.status === "up",
         message: p
-          ? `Estado: ${p.status.toUpperCase()} · HTTP ${p.httpStatus ?? "ERR"} · ${p.latencyMs} ms`
-          : "Sondeo completado",
+          ? `${p.status.toUpperCase()} · HTTP ${p.httpStatus ?? "ERR"} · ${p.latencyMs} ms`
+          : t.probeUrlCompleted,
         ...(detail ? { detail } : {}),
         ...(p?.tls ? { tls: p.tls } : {}),
       });
     } catch (err) {
       setResult({
         ok: false,
-        message: err instanceof Error ? err.message : "Error de red al sondear",
+        message: err instanceof Error ? err.message : t.probeUrlNetworkError,
       });
     } finally {
       setLoading(false);
@@ -70,11 +72,10 @@ export function ProbeUrlPanel() {
         <div>
           <h2 className="flex items-center gap-2 text-sm font-semibold">
             <Zap className="h-4 w-4 text-indigo-400" />
-            Probar URL ahora (Diagnóstico instantáneo)
+            {t.probeUrlTitle}
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Ejecuta validación DNS anti-SSRF, inspección de redirecciones y
-            certificado TLS.
+            {t.probeUrlSubtitle}
           </p>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -108,12 +109,12 @@ export function ProbeUrlPanel() {
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://api.ejemplo.com/health"
-          aria-label="URL a diagnosticar"
+          placeholder={t.probeUrlPlaceholder}
+          aria-label={t.probeUrlAria}
           className="h-9 flex-1 rounded-lg border border-zinc-300 bg-zinc-50 px-3 font-mono text-xs text-zinc-900 outline-none focus:border-indigo-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
         />
         <UiButton type="submit" loading={loading} size="md">
-          Probar URL ahora
+          {t.probeUrlButton}
         </UiButton>
       </form>
 

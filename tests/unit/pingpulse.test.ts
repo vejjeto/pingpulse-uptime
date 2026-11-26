@@ -22,6 +22,7 @@ import { createPingPulseDb } from "@/db";
 import { buildPgWindowMetricsQuery } from "@/db/queries.pg";
 import { ensureSeeded } from "@/db/seed-data";
 import { validateEnv } from "@/lib/env";
+import { TRANSLATIONS } from "@/lib/i18n";
 import { problemResponse } from "@/lib/problem-details";
 import { signHmacSha256, verifyHmacSha256 } from "@/lib/webhooks";
 import { afterEach, describe, expect, it } from "vitest";
@@ -439,5 +440,21 @@ describe("PingPulse Env, RFC 7807, SQLite persistence & Observability", () => {
     expect(spec.openapi).toBe("3.1.0");
     expect(spec.paths["/api/monitors"]).toBeDefined();
     expect(spec.paths["/api/badge/{monitorId}"]).toBeDefined();
+  });
+
+  it("maintains full es/en dictionary parity in i18n", () => {
+    const esKeys = Object.keys(TRANSLATIONS.es).sort();
+    const enKeys = Object.keys(TRANSLATIONS.en).sort();
+    expect(esKeys).toEqual(enKeys);
+    expect(esKeys.length).toBeGreaterThan(20);
+    for (const key of esKeys) {
+      const k = key as keyof typeof TRANSLATIONS.es;
+      expect(TRANSLATIONS.es[k].trim().length).toBeGreaterThan(0);
+      expect(TRANSLATIONS.en[k].trim().length).toBeGreaterThan(0);
+    }
+    expect(TRANSLATIONS.es.statusOperational).toBe(
+      "Todos los sistemas operativos",
+    );
+    expect(TRANSLATIONS.en.statusOperational).toBe("All systems operational");
   });
 });
